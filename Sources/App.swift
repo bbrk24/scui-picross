@@ -47,11 +47,12 @@ public struct PicrossApp: App {
     
     public var body: some Scene {
         WindowGroup("Picross") {
-            VStack(alignment: .center) {
+            VStack {
                 Grid(contents: $grid, columnLabels: columnLabels, rowLabels: rowLabels)
                     .padding()
 
                 Text("Left-click to fill in a cell; right-click to mark a cell as blank.")
+                    .multilineTextAlignment(.center)
                     .padding()
             }
             .onChange(of: grid, initial: false) {
