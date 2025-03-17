@@ -8,7 +8,36 @@ struct Grid: View {
     @Binding var contents: [[CellState]]
     var columnLabels: [[Int]]
     var rowLabels: [[Int]]
-    var majorGridSize = 5
+    var majorGridSize: Int
+
+    private let width: Int
+    private let height: Int
+
+    init(
+        contents: Binding<[[CellState]]>,
+        columnLabels: [[Int]], 
+        rowLabels: [[Int]],
+        majorGridSize: Int = 5
+    ) {
+        self._contents = contents
+        self.columnLabels = columnLabels
+        self.rowLabels = rowLabels
+        self.majorGridSize = majorGridSize
+
+        let verticalHintCount = columnLabels.map(\.count).max()!
+        let horizontalHintCount = rowLabels.map(\.count).max()!
+
+        self.width =
+            columnLabels.count * Grid.gridSize
+            + (columnLabels.count + 2 + columnLabels.count / majorGridSize) * Grid.rowSpacing
+            + horizontalHintCount * PicrossApp.lineHeight
+            + (horizontalHintCount + 1) * 2 * Grid.labelPadding
+        self.height =
+            rowLabels.count * Grid.gridSize
+            + (rowLabels.count + 2 + rowLabels.count / majorGridSize) * Grid.rowSpacing
+            + verticalHintCount * PicrossApp.lineHeight
+            + (verticalHintCount + 1) * 2 * Grid.labelPadding
+    }
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -76,8 +105,9 @@ struct Grid: View {
                 .padding([.top], rowIndex % majorGridSize == 0 ? Grid.rowSpacing : 0)
             }
         }
-        .padding([.bottom, .trailing], Grid.rowSpacing)
+        .padding(Grid.rowSpacing)
         .background(Color.gray)
+        .frame(width: width, height: height)
     }
 }
 

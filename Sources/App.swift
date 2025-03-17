@@ -22,8 +22,8 @@ func getLabels(for row: [Bool]) -> [Int] {
 
 @main
 public struct PicrossApp: App {
-    static let padding = 10
     static let fontSize = 16
+    static let lineHeight = Int(Double(fontSize) * 1.625)
 
     let solution: [[Bool]]
     let columnLabels: [[Int]]
@@ -31,10 +31,6 @@ public struct PicrossApp: App {
     @State var grid: [[CellState]]
     @State var hasWon = false
     @State var showAlert = false
-
-    private let majorGridSize = 5
-    private let windowWidth: Int
-    private let windowHeight: Int
 
     public init() {
         let rows = solutionStr.components(separatedBy: .newlines)
@@ -50,39 +46,22 @@ public struct PicrossApp: App {
         columnLabels = solution.transpose().map(getLabels(for:))
 
         grid = Array(repeating: Array(repeating: .blank, count: columnCount), count: rows.count)
-
-        let verticalHintCount = columnLabels.map(\.count).max()!
-        let horizontalHintCount = rowLabels.map(\.count).max()!
-        let lineHeight = Int(Double(PicrossApp.fontSize) * 1.625)
-
-        windowWidth =
-            columnCount * Grid.gridSize
-            + (columnCount + 2 + columnCount / majorGridSize) * Grid.rowSpacing
-            + horizontalHintCount * lineHeight
-            + (horizontalHintCount + 1) * 2 * Grid.labelPadding
-            + 2 * PicrossApp.padding
-        windowHeight =
-            rows.count * Grid.gridSize
-            + (rows.count + 2 + rows.count / majorGridSize) * Grid.rowSpacing
-            + (verticalHintCount + 3) * lineHeight
-            + (verticalHintCount + 1) * 2 * Grid.labelPadding
-            + 4 * PicrossApp.padding
     }
     
     public var body: some Scene {
         WindowGroup("Picross") {
-            VStack(spacing: 0) {
+            VStack {
                 Grid(
                     contents: $grid,
                     columnLabels: columnLabels,
                     rowLabels: rowLabels,
-                    majorGridSize: majorGridSize
+                    majorGridSize: 5
                 )
-                    .padding(PicrossApp.padding)
+                    .padding()
 
                 Text("Left-click to fill in a cell; right-click to mark a cell as blank.")
                     .multilineTextAlignment(.center)
-                    .padding(PicrossApp.padding)
+                    .padding()
             }
             .font(.system(size: PicrossApp.fontSize))
             .onChange(of: grid, initial: false) {
@@ -97,7 +76,7 @@ public struct PicrossApp: App {
                 }
             }
         }
-        .defaultSize(width: windowWidth, height: windowHeight)
+        .windowResizability(.contentMinSize)
     }
 }
 
