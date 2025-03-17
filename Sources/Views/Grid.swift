@@ -2,36 +2,38 @@ import SwiftCrossUI
 
 struct Grid: View {
     static let gridSize = 24
-    static let fontSize = 16
     static let labelPadding = 3
+    static let rowSpacing = 2
 
     @Binding var contents: [[CellState]]
     var columnLabels: [[Int]]
     var rowLabels: [[Int]]
+    var majorGridSize = 5
 
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 2) {
+        VStack(spacing: Grid.rowSpacing) {
+            HStack(spacing: Grid.rowSpacing) {
                 Spacer()
 
-                ForEach(columnLabels) { labelSet in
+                ForEach(Array(columnLabels.enumerated())) { columnIndex, labelSet in
                     VStack(spacing: 0) {
+                        Spacer(minLength: 0)
+
                         ForEach(labelSet) { number in
                             Text("\(number)")
                                 .padding([.vertical], Grid.labelPadding)
                         }
-
-                        Spacer(minLength: 0)
                     }
                     .frame(width: Grid.gridSize)
                     .background(colorScheme == .dark ? Color.black : Color.white)
+                    .padding([.leading], columnIndex % majorGridSize == 0 ? Grid.rowSpacing : 0)
                 }
             }
 
             ForEach(EnumeratedZip(rowLabels, contents)) { labelSet, row, rowIndex in
-                HStack(spacing: 2) {
+                HStack(spacing: Grid.rowSpacing) {
                     HStack(spacing: 0) {
                         Spacer(minLength: 0)
 
@@ -68,12 +70,14 @@ struct Grid: View {
                         .onTapGesture(gesture: .secondary) {
                             contents[rowIndex][columnIndex].toggleCrossedOut()
                         }
+                        .padding([.leading], columnIndex % majorGridSize == 0 ? Grid.rowSpacing : 0)
                     }
                 }
+                .padding([.top], rowIndex % majorGridSize == 0 ? Grid.rowSpacing : 0)
             }
         }
+        .padding([.bottom, .trailing], Grid.rowSpacing)
         .background(Color.gray)
-        .font(.system(size: Grid.fontSize))
     }
 }
 
